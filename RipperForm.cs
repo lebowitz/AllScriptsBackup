@@ -17,14 +17,27 @@ namespace AllScriptRipper
 
         private CancellationTokenSource _cts = new CancellationTokenSource();
         private void button1_Click(object sender, EventArgs e)
+        {            
+            Ripper.Start(_cts, DataDir, txtIdPrefix.Text, txtIdFrom.Text, txtIdTo.Text);
+        }
+
+        private DirectoryInfo DataDir
         {
-            var dataDir = new DirectoryInfo(txtDataLocation.Text);
-            Ripper.Start(_cts, dataDir, txtIdPrefix.Text, txtIdFrom.Text, txtIdTo.Text);
+            get
+            {
+                var dataDir = new DirectoryInfo(txtDataLocation.Text);
+                return dataDir;
+            }
         }
 
         private void btnCancel_Click(object sender, EventArgs e)
         {
             _cts.Cancel();
+        }
+
+        private void btnCreateIndex_Click(object sender, EventArgs e)
+        {
+            Indexer.Index(DataDir);
         }
     }
 }

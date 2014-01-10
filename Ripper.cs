@@ -108,9 +108,7 @@ namespace AllScriptRipper
                     }
                 }
 
-                findPatient.Close();
-
-                Indexer.Index(dataDir);
+                findPatient.Close();                
             }, ct, TaskCreationOptions.None, scheduler);
 
             return ct;

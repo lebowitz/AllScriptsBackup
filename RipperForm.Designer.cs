@@ -39,6 +39,7 @@
             this.btnCancel = new System.Windows.Forms.Button();
             this.lblIdPrefix = new System.Windows.Forms.Label();
             this.txtIdPrefix = new System.Windows.Forms.TextBox();
+            this.btnCreateIndex = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // btnGo
@@ -143,11 +144,22 @@
             this.txtIdPrefix.TabIndex = 10;
             this.txtIdPrefix.Text = "Imp";
             // 
+            // btnCreateIndex
+            // 
+            this.btnCreateIndex.Location = new System.Drawing.Point(178, 361);
+            this.btnCreateIndex.Name = "btnCreateIndex";
+            this.btnCreateIndex.Size = new System.Drawing.Size(75, 23);
+            this.btnCreateIndex.TabIndex = 11;
+            this.btnCreateIndex.Text = "Create Index";
+            this.btnCreateIndex.UseVisualStyleBackColor = true;
+            this.btnCreateIndex.Click += new System.EventHandler(this.btnCreateIndex_Click);
+            // 
             // RipperForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(378, 391);
+            this.Controls.Add(this.btnCreateIndex);
             this.Controls.Add(this.txtIdPrefix);
             this.Controls.Add(this.lblIdPrefix);
             this.Controls.Add(this.btnCancel);
@@ -179,5 +191,6 @@
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.Label lblIdPrefix;
         private System.Windows.Forms.TextBox txtIdPrefix;
+        private System.Windows.Forms.Button btnCreateIndex;
     }
 }
