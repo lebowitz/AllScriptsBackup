@@ -11,7 +11,10 @@ namespace AllScriptRipper
     {
         internal static void Index(DirectoryInfo root)
         {
-            var html = new StringBuilder("<table>");
+            
+            var html = new StringBuilder();
+            
+            html.Append("<head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"></meta></head>");
 
             var links = root.GetDirectories()
                             .ToList()
@@ -24,6 +27,8 @@ namespace AllScriptRipper
                                 {
                                     Trace.WriteLine(string.Format("Added {0} to index...", d.FullName));
                                     o = JObject.Parse(File.ReadAllText(files[0].FullName));
+                                    o["dir"] = d.Name;
+                                    o["title"] = o.Value<string>("title").Replace("Patient Demographics - ", "");
                                     var onePageSummaryDoc = new HtmlDocument {OptionFixNestedTags = true};
                                     onePageSummaryDoc.LoadHtml(o.Value<string>("one_page_summary_html"));
 
@@ -34,17 +39,25 @@ namespace AllScriptRipper
                                     string remarksStr = string.Empty;
                                     if (remarks != null)
                                     {
-                                        remarksStr = "<pre>" + remarks.ToString() + "</pre></br>";
+                                        remarksStr = "<h2>Remarks</h2><table><tr><th>Date</th><th>Remark</th></tr>";
+                                        foreach (var r in remarks)
+                                        {
+                                            remarksStr += string.Format("<tr><td>{0}</td><td>{1}</td></tr>", r.Value<string>("Date"),
+                                                r.Value<string>("Text"));
+                                        }
+                                        remarksStr += "</table>";
                                     }
 
-                                    string opsInnerHtml = onePageSummaryDoc.DocumentNode.ChildNodes[2].ChildNodes[2].InnerHtml;
-                                    string demoInnerHtml = demographicsDoc.DocumentNode.ChildNodes[2].ChildNodes[2].InnerHtml;
-                                    string overallHtml = remarksStr + demoInnerHtml + opsInnerHtml;
+                                    string opsInnerHtml = "<h2>One-Page Summary</h2>" + onePageSummaryDoc.DocumentNode.ChildNodes[2].ChildNodes[2].InnerHtml;
+                                    string demoInnerHtml = "<h2>Demographics</h2>" + demographicsDoc.DocumentNode.ChildNodes[2].ChildNodes[2].InnerHtml;
+                                    string rHtml = remarksStr + demoInnerHtml + opsInnerHtml;
+                                    
+                                    rHtml = "<body>" + rHtml + "</body>";
 
-                                    overallHtml = "<HEAD><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"></meta>" + overallHtml;
-                                    //htmlStr = htmlStr.Replace("Â", "");
-
-                                    File.WriteAllText(Path.Combine(d.FullName, "patient.html"), overallHtml);
+                                    rHtml = string.Format("<h1>{0}</h1>", o.Value<string>("title")) + rHtml;
+                                    rHtml = rHtml.Replace("DISPLAY: none", string.Empty);
+                                    rHtml = rHtml.Replace(@"style=""DISPLAY: none""", string.Empty);
+                                    File.WriteAllText(Path.Combine(root.FullName, d.Name + ".html"), rHtml);
                                     
                                     return o;
                                 }
@@ -56,12 +69,13 @@ namespace AllScriptRipper
 
                 ).Where(o => o != null).OrderBy(l => l.Value<string>("name"));
 
+            html.Append("<ul>");
             foreach (var l in links)
             {
-                html.AppendFormat("<tr><td>{0}</td><td><a href='{1}'>bio</a></td><td><a href='{2}'>summary</a></td></tr>", l.Value<string>("title"), string.Empty, string.Empty);
+                html.AppendFormat("<li><a href='{0}.html'>{1}</a></td></tr>", l.Value<string>("dir"), l.Value<string>("title")+"</li>");
             }
-            html.Append("</table>");
-                        
+            html.Append("</ul>");
+            
             File.WriteAllText(Path.Combine(root.FullName, "index.html"), html.ToString());
         }
     }
