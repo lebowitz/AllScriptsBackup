@@ -38,6 +38,9 @@
     <Reference Include="HtmlAgilityPack">
       <HintPath>packages\HtmlAgilityPack.1.4.6\lib\Net45\HtmlAgilityPack.dll</HintPath>
     </Reference>
+    <Reference Include="Nest">
+      <HintPath>packages\NEST.0.12.0.0\lib\NET4\Nest.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>packages\Newtonsoft.Json.5.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -58,7 +61,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AutomationElementExtensions.cs" />
-    <Compile Include="Indexer.cs" />
     <Compile Include="Ripper.cs" />
     <Compile Include="TextBoxTraceListener.cs" />
     <Compile Include="UI\FindPatientWindow.cs" />

@@ -18,14 +18,14 @@ namespace AllScriptRipper
         private CancellationTokenSource _cts = new CancellationTokenSource();
         private void button1_Click(object sender, EventArgs e)
         {            
-            Ripper.Start(_cts, DataDir, txtIdPrefix.Text, txtIdFrom.Text, txtIdTo.Text);
+            Ripper.Start(_cts, new Uri(txtElasticSearchUrl.Text), txtIndex.Text, txtType.Text, txtPatientIds.Lines);
         }
 
         private DirectoryInfo DataDir
         {
             get
             {
-                var dataDir = new DirectoryInfo(txtDataLocation.Text);
+                var dataDir = new DirectoryInfo(txtElasticSearchUrl.Text);
                 return dataDir;
             }
         }
@@ -33,11 +33,6 @@ namespace AllScriptRipper
         private void btnCancel_Click(object sender, EventArgs e)
         {
             _cts.Cancel();
-        }
-
-        private void btnCreateIndex_Click(object sender, EventArgs e)
-        {
-            Indexer.Index(DataDir);
         }
     }
 }

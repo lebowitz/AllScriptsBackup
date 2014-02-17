@@ -30,16 +30,14 @@
         {
             this.btnGo = new System.Windows.Forms.Button();
             this.txtLog = new System.Windows.Forms.TextBox();
-            this.lblDataLocation = new System.Windows.Forms.Label();
-            this.txtDataLocation = new System.Windows.Forms.TextBox();
-            this.txtIdFrom = new System.Windows.Forms.TextBox();
-            this.lblIdRange = new System.Windows.Forms.Label();
-            this.lblTo = new System.Windows.Forms.Label();
-            this.txtIdTo = new System.Windows.Forms.TextBox();
+            this.lblElasticSearchUrl = new System.Windows.Forms.Label();
+            this.txtElasticSearchUrl = new System.Windows.Forms.TextBox();
             this.btnCancel = new System.Windows.Forms.Button();
-            this.lblIdPrefix = new System.Windows.Forms.Label();
-            this.txtIdPrefix = new System.Windows.Forms.TextBox();
-            this.btnCreateIndex = new System.Windows.Forms.Button();
+            this.txtIndex = new System.Windows.Forms.TextBox();
+            this.lblIndex = new System.Windows.Forms.Label();
+            this.txtType = new System.Windows.Forms.TextBox();
+            this.lblType = new System.Windows.Forms.Label();
+            this.txtPatientIds = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // btnGo
@@ -58,63 +56,29 @@
             this.txtLog.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtLog.Location = new System.Drawing.Point(12, 82);
+            this.txtLog.Location = new System.Drawing.Point(12, 247);
             this.txtLog.Multiline = true;
             this.txtLog.Name = "txtLog";
             this.txtLog.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtLog.Size = new System.Drawing.Size(361, 268);
+            this.txtLog.Size = new System.Drawing.Size(361, 108);
             this.txtLog.TabIndex = 1;
             // 
-            // lblDataLocation
+            // lblElasticSearchUrl
             // 
-            this.lblDataLocation.AutoSize = true;
-            this.lblDataLocation.Location = new System.Drawing.Point(9, 12);
-            this.lblDataLocation.Name = "lblDataLocation";
-            this.lblDataLocation.Size = new System.Drawing.Size(108, 13);
-            this.lblDataLocation.TabIndex = 2;
-            this.lblDataLocation.Text = "Target Data Location";
+            this.lblElasticSearchUrl.AutoSize = true;
+            this.lblElasticSearchUrl.Location = new System.Drawing.Point(9, 12);
+            this.lblElasticSearchUrl.Name = "lblElasticSearchUrl";
+            this.lblElasticSearchUrl.Size = new System.Drawing.Size(88, 13);
+            this.lblElasticSearchUrl.TabIndex = 2;
+            this.lblElasticSearchUrl.Text = "ElasticSearch Url";
             // 
-            // txtDataLocation
+            // txtElasticSearchUrl
             // 
-            this.txtDataLocation.Location = new System.Drawing.Point(123, 9);
-            this.txtDataLocation.Name = "txtDataLocation";
-            this.txtDataLocation.Size = new System.Drawing.Size(250, 20);
-            this.txtDataLocation.TabIndex = 3;
-            this.txtDataLocation.Text = "c:\\belliacres-data";
-            // 
-            // txtIdFrom
-            // 
-            this.txtIdFrom.Location = new System.Drawing.Point(123, 34);
-            this.txtIdFrom.Name = "txtIdFrom";
-            this.txtIdFrom.Size = new System.Drawing.Size(109, 20);
-            this.txtIdFrom.TabIndex = 5;
-            this.txtIdFrom.Text = "8026";
-            // 
-            // lblIdRange
-            // 
-            this.lblIdRange.AutoSize = true;
-            this.lblIdRange.Location = new System.Drawing.Point(9, 37);
-            this.lblIdRange.Name = "lblIdRange";
-            this.lblIdRange.Size = new System.Drawing.Size(51, 13);
-            this.lblIdRange.TabIndex = 4;
-            this.lblIdRange.Text = "Id Range";
-            // 
-            // lblTo
-            // 
-            this.lblTo.AutoSize = true;
-            this.lblTo.Location = new System.Drawing.Point(238, 37);
-            this.lblTo.Name = "lblTo";
-            this.lblTo.Size = new System.Drawing.Size(16, 13);
-            this.lblTo.TabIndex = 6;
-            this.lblTo.Text = "to";
-            // 
-            // txtIdTo
-            // 
-            this.txtIdTo.Location = new System.Drawing.Point(260, 34);
-            this.txtIdTo.Name = "txtIdTo";
-            this.txtIdTo.Size = new System.Drawing.Size(113, 20);
-            this.txtIdTo.TabIndex = 7;
-            this.txtIdTo.Text = "10000";
+            this.txtElasticSearchUrl.Location = new System.Drawing.Point(123, 9);
+            this.txtElasticSearchUrl.Name = "txtElasticSearchUrl";
+            this.txtElasticSearchUrl.Size = new System.Drawing.Size(250, 20);
+            this.txtElasticSearchUrl.TabIndex = 3;
+            this.txtElasticSearchUrl.Text = "http://localhost:9200";
             // 
             // btnCancel
             // 
@@ -127,48 +91,61 @@
             this.btnCancel.UseVisualStyleBackColor = true;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
             // 
-            // lblIdPrefix
+            // txtIndex
             // 
-            this.lblIdPrefix.AutoSize = true;
-            this.lblIdPrefix.Location = new System.Drawing.Point(9, 59);
-            this.lblIdPrefix.Name = "lblIdPrefix";
-            this.lblIdPrefix.Size = new System.Drawing.Size(69, 13);
-            this.lblIdPrefix.TabIndex = 9;
-            this.lblIdPrefix.Text = "Id Prefix (opt)";
+            this.txtIndex.Location = new System.Drawing.Point(123, 35);
+            this.txtIndex.Name = "txtIndex";
+            this.txtIndex.Size = new System.Drawing.Size(250, 20);
+            this.txtIndex.TabIndex = 13;
+            this.txtIndex.Text = "allscripts";
             // 
-            // txtIdPrefix
+            // lblIndex
             // 
-            this.txtIdPrefix.Location = new System.Drawing.Point(123, 56);
-            this.txtIdPrefix.Name = "txtIdPrefix";
-            this.txtIdPrefix.Size = new System.Drawing.Size(250, 20);
-            this.txtIdPrefix.TabIndex = 10;
-            this.txtIdPrefix.Text = "Imp";
+            this.lblIndex.AutoSize = true;
+            this.lblIndex.Location = new System.Drawing.Point(9, 38);
+            this.lblIndex.Name = "lblIndex";
+            this.lblIndex.Size = new System.Drawing.Size(33, 13);
+            this.lblIndex.TabIndex = 12;
+            this.lblIndex.Text = "Index";
             // 
-            // btnCreateIndex
+            // txtType
             // 
-            this.btnCreateIndex.Location = new System.Drawing.Point(178, 361);
-            this.btnCreateIndex.Name = "btnCreateIndex";
-            this.btnCreateIndex.Size = new System.Drawing.Size(75, 23);
-            this.btnCreateIndex.TabIndex = 11;
-            this.btnCreateIndex.Text = "Create Index";
-            this.btnCreateIndex.UseVisualStyleBackColor = true;
-            this.btnCreateIndex.Click += new System.EventHandler(this.btnCreateIndex_Click);
+            this.txtType.Location = new System.Drawing.Point(123, 61);
+            this.txtType.Name = "txtType";
+            this.txtType.Size = new System.Drawing.Size(250, 20);
+            this.txtType.TabIndex = 15;
+            this.txtType.Text = "patient";
+            // 
+            // lblType
+            // 
+            this.lblType.AutoSize = true;
+            this.lblType.Location = new System.Drawing.Point(9, 64);
+            this.lblType.Name = "lblType";
+            this.lblType.Size = new System.Drawing.Size(31, 13);
+            this.lblType.TabIndex = 14;
+            this.lblType.Text = "Type";
+            // 
+            // txtPatientIds
+            // 
+            this.txtPatientIds.Location = new System.Drawing.Point(12, 90);
+            this.txtPatientIds.Multiline = true;
+            this.txtPatientIds.Name = "txtPatientIds";
+            this.txtPatientIds.Size = new System.Drawing.Size(354, 151);
+            this.txtPatientIds.TabIndex = 16;
             // 
             // RipperForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(378, 391);
-            this.Controls.Add(this.btnCreateIndex);
-            this.Controls.Add(this.txtIdPrefix);
-            this.Controls.Add(this.lblIdPrefix);
+            this.Controls.Add(this.txtPatientIds);
+            this.Controls.Add(this.txtType);
+            this.Controls.Add(this.lblType);
+            this.Controls.Add(this.txtIndex);
+            this.Controls.Add(this.lblIndex);
             this.Controls.Add(this.btnCancel);
-            this.Controls.Add(this.txtIdTo);
-            this.Controls.Add(this.lblTo);
-            this.Controls.Add(this.txtIdFrom);
-            this.Controls.Add(this.lblIdRange);
-            this.Controls.Add(this.txtDataLocation);
-            this.Controls.Add(this.lblDataLocation);
+            this.Controls.Add(this.txtElasticSearchUrl);
+            this.Controls.Add(this.lblElasticSearchUrl);
             this.Controls.Add(this.txtLog);
             this.Controls.Add(this.btnGo);
             this.Name = "RipperForm";
@@ -182,15 +159,13 @@
 
         private System.Windows.Forms.Button btnGo;
         private System.Windows.Forms.TextBox txtLog;
-        private System.Windows.Forms.Label lblDataLocation;
-        private System.Windows.Forms.TextBox txtDataLocation;
-        private System.Windows.Forms.TextBox txtIdFrom;
-        private System.Windows.Forms.Label lblIdRange;
-        private System.Windows.Forms.Label lblTo;
-        private System.Windows.Forms.TextBox txtIdTo;
+        private System.Windows.Forms.Label lblElasticSearchUrl;
+        private System.Windows.Forms.TextBox txtElasticSearchUrl;
         private System.Windows.Forms.Button btnCancel;
-        private System.Windows.Forms.Label lblIdPrefix;
-        private System.Windows.Forms.TextBox txtIdPrefix;
-        private System.Windows.Forms.Button btnCreateIndex;
+        private System.Windows.Forms.TextBox txtIndex;
+        private System.Windows.Forms.Label lblIndex;
+        private System.Windows.Forms.TextBox txtType;
+        private System.Windows.Forms.Label lblType;
+        private System.Windows.Forms.TextBox txtPatientIds;
     }
 }

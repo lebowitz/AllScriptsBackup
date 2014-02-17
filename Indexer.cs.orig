@@ -1,8 +1,10 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using HtmlAgilityPack;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace AllScriptRipper
@@ -16,6 +18,7 @@ namespace AllScriptRipper
             
             html.Append("<head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"></meta></head>");
 
+<<<<<<< HEAD
             var links = root.GetDirectories()
                             .ToList()
                             .Select(d =>
@@ -62,20 +65,88 @@ namespace AllScriptRipper
                                     return o;
                                 }
                                 
+=======
+            var patients = new List<JObject>();
 
-                                Trace.WriteLine("Missing patient.json in " + d.FullName);
-                                return null;
-                            }
+            var htmlDir = new DirectoryInfo(Path.Combine(root.FullName, "html"));
+            if (!htmlDir.Exists)
+            {
+                htmlDir.Create();
+            }
 
-                ).Where(o => o != null).OrderBy(l => l.Value<string>("name"));
 
+            foreach (FileInfo patientFile in root.GetFiles("*.json", SearchOption.TopDirectoryOnly).ToArray())
+            {
+                Trace.WriteLine(string.Format("Added {0} to index...", patientFile));
+
+                JObject patient = JObject.Parse(File.ReadAllText(patientFile.FullName));
+
+                var onePageSummaryDoc = new HtmlDocument() { OptionFixNestedTags = true };
+                onePageSummaryDoc.LoadHtml(patient.Value<string>("one_page_summary_html"));                
+                HtmlNode opsSummaryBody = onePageSummaryDoc.DocumentNode.SelectSingleNode("//body");
+                var fontNodes = opsSummaryBody.SelectNodes("//font");
+                if (fontNodes != null)
+                {
+                    foreach (var f in fontNodes)
+                    {
+                        f.Attributes.RemoveAll();
+                    }
+                }
+
+                patient["one_page_summary_body_html"] = "<h1>One Page Summary</h1>" + opsSummaryBody.InnerHtml;
+>>>>>>> put HTML into the stored patient objects
+
+
+                var demographicsDoc = new HtmlDocument { OptionFixNestedTags = true };
+                demographicsDoc.LoadHtml(patient.Value<string>("demographics_html"));
+                var demographicsBody = demographicsDoc.DocumentNode.SelectSingleNode("//body");
+                var tabsTable = demographicsBody.SelectSingleNode("//table[@id='tabsTable']");
+                tabsTable.Remove();
+                var oDiv = demographicsBody.SelectSingleNode("//div[@id='oDiv']");
+                oDiv.Attributes.Remove("style");
+                oDiv.SelectSingleNode("//img").Remove();
+
+<<<<<<< HEAD
             html.Append("<ul>");
             foreach (var l in links)
+=======
+                patient["demographics_body_html"] = "<h1>Demographics</h1>" + demographicsBody.InnerHtml;
+                
+                var remarks = patient.Value<JArray>("remarks");
+                string remarksHtml = "<h1>Remarks</h1>";
+                if (remarks != null)
+                {
+                    remarksHtml = "<pre>" + remarks + "</pre></br>";
+                }
+                patient["remarks_html"] = remarksHtml;
+                
+
+                string patientHtml = (string)patient["remarks_html"] + (string)patient["demographics_body_html"] + (string)patient["one_page_summary_body_html"];
+
+                patientHtml = "<head>" +
+                              "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"></meta>" +
+                              "</head>" +
+                              patientHtml;
+
+                File.WriteAllText(patientFile.FullName, patient.ToString(Formatting.Indented));
+                File.WriteAllText(Path.Combine(htmlDir.FullName, patientFile.Name.Replace(".json", ".html")), patientHtml);
+                
+                patients.Add(patient);
+            }
+            
+            foreach (var l in patients.OrderBy(l => l.Value<string>("name")))
+>>>>>>> put HTML into the stored patient objects
             {
                 html.AppendFormat("<li><a href='{0}.html'>{1}</a></td></tr>", l.Value<string>("dir"), l.Value<string>("title")+"</li>");
             }
+<<<<<<< HEAD
             html.Append("</ul>");
             
+=======
+
+            html.Append("</table>");
+                        
+>>>>>>> put HTML into the stored patient objects
             File.WriteAllText(Path.Combine(root.FullName, "index.html"), html.ToString());
         }
     }

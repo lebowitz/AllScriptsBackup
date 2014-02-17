@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Globalization;
-using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
+using Nest;
 using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 
 namespace AllScriptRipper
 {
     static public class Ripper
     {
-        internal static CancellationToken Start(CancellationTokenSource tokenSource, DirectoryInfo dataDir, string idPrefix, string fromId, string toId)
+        internal static CancellationToken Start(CancellationTokenSource tokenSource, Uri elasticSearchUri, string index, string type, IEnumerable<string> patientIds)
         {
             CancellationToken ct = tokenSource.Token;
             var scheduler = TaskScheduler.FromCurrentSynchronizationContext();
@@ -25,13 +26,20 @@ namespace AllScriptRipper
                 {
                     childWindow.Close();
                 }
-
+                var esConn = new ConnectionSettings(elasticSearchUri);
+                esConn.SetDefaultIndex(index);
+                
+                var ec = new ElasticClient(esConn);
+                                
                 var findPatient = desktop.FindPatient();
+                findPatient.ShowAllColumns();
                 findPatient.SetSortBy("ID");
 
-                string patientIdStr = string.Empty;
-                for (int patientId = int.Parse(fromId); patientId <= int.Parse(toId); patientId++)
+                foreach(string pid in patientIds.Select(i => StripNonAscii(i).Trim()))
                 {
+                    
+                    var patient = ec.Get<JObject>(index, type, pid);
+
                     if (ct.IsCancellationRequested)
                     {
                         Trace.WriteLine("Cancel requested...");
@@ -40,71 +48,35 @@ namespace AllScriptRipper
 
                     try
                     {
-                        patientIdStr = (idPrefix ?? string.Empty) + patientId.ToString(CultureInfo.InvariantCulture);
-
-                        Trace.WriteLine(string.Format("Start Patient Id={0}:", patientIdStr));
-
                         desktop.CloseOtherPrmWindows();
 
-
-                        findPatient.SetPatientId(patientIdStr);
+                        findPatient.SetPatientId(pid);
 
                         findPatient.Search();
 
-                        if (findPatient.GetFirstRowId() != patientIdStr)
+                        string id = StripNonAscii(findPatient.GetFirstRowId());
+                        if (id == pid)
                         {
-                            Trace.WriteLine(string.Format("Skipping missing patient id '{0}'", patientIdStr));
-                            continue;
+                            if (patient == null)
+                            {
+                                patient = FindPatientWindow.RowToPatient(findPatient.GetRow(1));                                
+                            }
+
+                            if (patient["demographics_html"] == null)
+                            {
+                                findPatient.Modify();
+                                Thread.Sleep(250);
+                                var demo = new PatientDemographicWindow();
+                                demo.CloseChildWindows();
+                                patient["demographics_html"] = demo.ToHtml(id);
+                            }
+
+                            ec.Index(patient, index, type, pid);                            
                         }
-
-                        var patientDir = CreatePatientDir(dataDir, patientIdStr);
-
-                        findPatient.Modify();
-
-                        var patientDemographic = new PatientDemographicWindow();
-
-                        var patient = new JObject();
-
-                        patient["title"] = patientDemographic.Title;
-                        string name = patientDemographic.PatientNameFromTitle;
-
-                        patient["name"] = name;
-                     
-                        var remarksWindow = patientDemographic.GetRemarksWindow();
-                        
-                        if (remarksWindow != null)
-                        {
-                            var remarks = remarksWindow.GetAllRemarks();
-                            remarks.ForEach(r => Trace.WriteLine(string.Format("Remark [{0}]: {1}", r.Date, r.Text)));
-                            patient["remarks"] = JArray.FromObject(remarks);
-                            remarksWindow.Ok();
-                        }
-
-                        patient["demographics_html"] = patientDemographic.ToHtml(name);
-
-                        var ops = patientDemographic.GetOnePageSummary();
-
-                        ops.WaitForDoneStatus();
-
-                        patient["one_page_summary_html"] = ops.ToHtml(name);
-
-                        var patientJson = new FileInfo(Path.Combine(patientDir.FullName, "patient.json"));
-                        Trace.WriteLine(string.Format("\tWriting {0}", patientJson.FullName));
-
-                        File.WriteAllText(patientJson.FullName,
-                            JsonConvert.SerializeObject(patient, Formatting.Indented));
-
-                        patientDemographic.Close();
-                        ops.Close();
-
                     }
                     catch (Exception ex)
                     {
                         Trace.WriteLine(ex.ToString());
-                    }
-                    finally
-                    {
-                        Trace.WriteLine(string.Format("End Patient Id={0}:", patientIdStr));
                     }
                 }
 
@@ -113,16 +85,9 @@ namespace AllScriptRipper
 
             return ct;
         }
-
-        private static DirectoryInfo CreatePatientDir(DirectoryInfo dataDir, string patientIdStr)
+        private static string StripNonAscii(string s)
         {
-            var patientDir = new DirectoryInfo(Path.Combine(dataDir.FullName, patientIdStr));
-
-            if (!patientDir.Exists)
-            {
-                patientDir.Create();
-            }
-            return patientDir;
+            return Regex.Replace(s, @"[^\u0000-\u007F]", string.Empty);
         }
     }
 }

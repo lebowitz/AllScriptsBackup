@@ -21,6 +21,14 @@ namespace AllScriptRipper
             }
         }
 
+        public void CloseChildWindows()
+        {
+            foreach (AutomationElement w in Element.FindAll(TreeScope.Children, new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Window)))
+            {
+                w.Close();
+            }
+        }
+
         public PrmWindow(AutomationElement automationElement)
         {
             Element = automationElement;
