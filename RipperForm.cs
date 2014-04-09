@@ -16,9 +16,20 @@ namespace AllScriptRipper
         }
 
         private CancellationTokenSource _cts = new CancellationTokenSource();
+
         private void button1_Click(object sender, EventArgs e)
-        {            
-            Ripper.Start(_cts, new Uri(txtElasticSearchUrl.Text), txtIndex.Text, txtType.Text, txtPatientIds.Lines);
+        {
+            var options = new LoadOptions
+            {
+                ReleaseOfInformation = cbReleaseOfInformation.Checked,
+                Demographics = cbDemographics.Checked,
+                Index = txtIndex.Text,
+                Type = txtType.Text,
+                PatientIds = txtPatientIds.Lines,
+                ElasticSearchUri = new Uri(txtElasticSearchUrl.Text)
+            };
+
+            Ripper.Start(_cts, options);
         }
 
         private DirectoryInfo DataDir

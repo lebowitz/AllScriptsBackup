@@ -108,6 +108,7 @@ namespace AllScriptRipper
         public void Close()
         {
             Element.Close();
+            Thread.Sleep(150);
         }
 
         public void Ok()

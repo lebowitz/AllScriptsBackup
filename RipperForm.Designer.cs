@@ -38,6 +38,8 @@
             this.txtType = new System.Windows.Forms.TextBox();
             this.lblType = new System.Windows.Forms.Label();
             this.txtPatientIds = new System.Windows.Forms.TextBox();
+            this.cbDemographics = new System.Windows.Forms.CheckBox();
+            this.cbReleaseOfInformation = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // btnGo
@@ -127,17 +129,40 @@
             // 
             // txtPatientIds
             // 
-            this.txtPatientIds.Location = new System.Drawing.Point(12, 90);
+            this.txtPatientIds.Location = new System.Drawing.Point(12, 114);
             this.txtPatientIds.Multiline = true;
             this.txtPatientIds.Name = "txtPatientIds";
-            this.txtPatientIds.Size = new System.Drawing.Size(354, 151);
+            this.txtPatientIds.Size = new System.Drawing.Size(354, 127);
             this.txtPatientIds.TabIndex = 16;
+            this.txtPatientIds.Text = "1\r\n2\r\n3\r\n4\r\n5";
+            // 
+            // cbDemographics
+            // 
+            this.cbDemographics.AutoSize = true;
+            this.cbDemographics.Location = new System.Drawing.Point(12, 91);
+            this.cbDemographics.Name = "cbDemographics";
+            this.cbDemographics.Size = new System.Drawing.Size(94, 17);
+            this.cbDemographics.TabIndex = 18;
+            this.cbDemographics.Text = "Demographics";
+            this.cbDemographics.UseVisualStyleBackColor = true;
+            // 
+            // cbReleaseOfInformation
+            // 
+            this.cbReleaseOfInformation.AutoSize = true;
+            this.cbReleaseOfInformation.Location = new System.Drawing.Point(112, 91);
+            this.cbReleaseOfInformation.Name = "cbReleaseOfInformation";
+            this.cbReleaseOfInformation.Size = new System.Drawing.Size(100, 17);
+            this.cbReleaseOfInformation.TabIndex = 19;
+            this.cbReleaseOfInformation.Text = "Release Of Info";
+            this.cbReleaseOfInformation.UseVisualStyleBackColor = true;
             // 
             // RipperForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(378, 391);
+            this.Controls.Add(this.cbReleaseOfInformation);
+            this.Controls.Add(this.cbDemographics);
             this.Controls.Add(this.txtPatientIds);
             this.Controls.Add(this.txtType);
             this.Controls.Add(this.lblType);
@@ -167,5 +192,7 @@
         private System.Windows.Forms.TextBox txtType;
         private System.Windows.Forms.Label lblType;
         private System.Windows.Forms.TextBox txtPatientIds;
+        private System.Windows.Forms.CheckBox cbDemographics;
+        private System.Windows.Forms.CheckBox cbReleaseOfInformation;
     }
 }

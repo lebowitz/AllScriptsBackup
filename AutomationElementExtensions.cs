@@ -76,7 +76,7 @@ namespace AllScriptRipper
             }
         }
 
-        public static IList<AutomationElement> GetWindows(this AutomationElement ae, string title = null)
+        public static IList<AutomationElement>GetWindows(this AutomationElement ae, string title = null)
         {
             try
             {

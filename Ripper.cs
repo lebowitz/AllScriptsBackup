@@ -12,7 +12,7 @@ namespace AllScriptRipper
 {
     static public class Ripper
     {
-        internal static CancellationToken Start(CancellationTokenSource tokenSource, Uri elasticSearchUri, string index, string type, IEnumerable<string> patientIds)
+        internal static CancellationToken Start(CancellationTokenSource tokenSource, LoadOptions options)
         {
             CancellationToken ct = tokenSource.Token;
             var scheduler = TaskScheduler.FromCurrentSynchronizationContext();
@@ -26,8 +26,8 @@ namespace AllScriptRipper
                 {
                     childWindow.Close();
                 }
-                var esConn = new ConnectionSettings(elasticSearchUri);
-                esConn.SetDefaultIndex(index);
+                var esConn = new ConnectionSettings(options.ElasticSearchUri);
+                esConn.SetDefaultIndex(options.Index);
                 
                 var ec = new ElasticClient(esConn);
                                 
@@ -35,10 +35,10 @@ namespace AllScriptRipper
                 findPatient.ShowAllColumns();
                 findPatient.SetSortBy("ID");
 
-                foreach(string pid in patientIds.Select(i => StripNonAscii(i).Trim()))
+                foreach(string pid in options.PatientIds.Select(i => StripNonAscii(i).Trim()))
                 {
-                    
-                    var patient = ec.Get<JObject>(index, type, pid);
+
+                    var patient = ec.Get<JObject>(options.Index, options.Type, pid);
 
                     if (ct.IsCancellationRequested)
                     {
@@ -55,23 +55,40 @@ namespace AllScriptRipper
                         findPatient.Search();
 
                         string id = StripNonAscii(findPatient.GetFirstRowId());
-                        if (id == pid)
+                        if (id == pid) // make sure the first row matches
                         {
-                            if (patient == null)
+                            if (patient == null) // new patient
                             {
                                 patient = FindPatientWindow.RowToPatient(findPatient.GetRow(1));                                
                             }
 
-                            if (patient["demographics_html"] == null)
+                            PatientDemographicWindow demo = null;
+                            if (options.Demographics || options.ReleaseOfInformation)
                             {
                                 findPatient.Modify();
                                 Thread.Sleep(250);
-                                var demo = new PatientDemographicWindow();
+                                demo = new PatientDemographicWindow();
                                 demo.CloseChildWindows();
-                                patient["demographics_html"] = demo.ToHtml(id);
                             }
 
-                            ec.Index(patient, index, type, pid);                            
+                            if (options.Demographics)
+                            {
+                                patient["demographics_html"] = demo.ToHtml(id);                              
+                            }
+
+                            if (options.ReleaseOfInformation) {
+                                var roi = demo.ReleaseInformation();
+                                roi.Save();
+                                roi.Close();
+                                patient["released"] = true;
+                            }
+
+                            if (demo != null)
+                            {
+                                demo.Close();
+                            }
+
+                            ec.Index(patient, options.Index, options.Type, pid);                            
                         }
                     }
                     catch (Exception ex)

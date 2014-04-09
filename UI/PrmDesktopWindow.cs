@@ -42,7 +42,7 @@ namespace AllScriptRipper
         {
             Element
                 .FindByIdPath("toolStripContainer/Top/menuStrip")
-                .FindByNamePath("Find Patient")
+                .FindByNamePath("Desktop/Find Patient")
                 .Invoke();
 
             AutomationElement findPatient = null;

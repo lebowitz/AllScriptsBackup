@@ -61,10 +61,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AutomationElementExtensions.cs" />
+    <Compile Include="LoadOptions.cs" />
     <Compile Include="Ripper.cs" />
     <Compile Include="TextBoxTraceListener.cs" />
     <Compile Include="UI\FindPatientWindow.cs" />
     <Compile Include="UI\HtmlHelpers.cs" />
+    <Compile Include="UI\ReleaseOfInformationWindow.cs" />
     <Compile Include="UI\OnePageSummaryWindow.cs" />
     <Compile Include="UI\PrmDesktopWindow.cs" />
     <Compile Include="UI\PrmWindow.cs" />
