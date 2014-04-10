@@ -41,6 +41,7 @@ namespace AllScriptRipper
 
         public string ToHtml(string knownSubstring)
         {
+            throw new NotImplementedException();
             Element.Focus();
             Thread.Sleep(250);
             string html = null;
@@ -107,7 +108,10 @@ namespace AllScriptRipper
 
         public void Close()
         {
+            Thread.Sleep(150);
+            
             Element.Close();
+
             Thread.Sleep(150);
         }
 

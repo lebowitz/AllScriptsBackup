@@ -62,31 +62,26 @@ namespace AllScriptRipper
                                 patient = FindPatientWindow.RowToPatient(findPatient.GetRow(1));                                
                             }
 
-                            PatientDemographicWindow demo = null;
-                            if (options.Demographics || options.ReleaseOfInformation)
-                            {
-                                findPatient.Modify();
-                                Thread.Sleep(250);
-                                demo = new PatientDemographicWindow();
-                                demo.CloseChildWindows();
-                            }
+                            findPatient.Modify();
+                            Thread.Sleep(250);
+                            var demo = new PatientDemographicWindow();
+                            demo.CloseChildWindows();
 
                             if (options.Demographics)
                             {
-                                patient["demographics_html"] = demo.ToHtml(id);                              
+                                patient["demographics_html"] = demo.ToHtml(id);
                             }
 
                             if (options.ReleaseOfInformation) {
-                                var roi = demo.ReleaseInformation();
+                                demo.ReleaseInformation();
+                                var roi = new ReleaseOfInformationWindow();
                                 roi.Save();
+
                                 roi.Close();
                                 patient["released"] = true;
                             }
 
-                            if (demo != null)
-                            {
-                                demo.Close();
-                            }
+                            
 
                             ec.Index(patient, options.Index, options.Type, pid);                            
                         }

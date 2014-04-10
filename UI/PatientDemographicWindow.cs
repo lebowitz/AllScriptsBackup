@@ -66,21 +66,12 @@ namespace AllScriptRipper
 
         }
 
-        internal ReleaseOfInformationWindow ReleaseInformation()
+        internal void ReleaseInformation()
         {
             Element
                     .FindByIdPath("toolStripContainer/Top/PatientToolstrip")
                     .FindByNamePath("Release of Information...")
-                    .Invoke();
-
-            AutomationElement win = null;
-            while (win == null)
-            {
-                win = AutomationElement.RootElement.GetWindows("Release of Information").FirstOrDefault();
-                Thread.Sleep(125);
-            }
-
-            return new ReleaseOfInformationWindow(win);
+                    .Invoke();            
         }
 
         public OnePageSummaryWindow GetOnePageSummary()

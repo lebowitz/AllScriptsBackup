@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(RipperForm));
             this.btnGo = new System.Windows.Forms.Button();
             this.txtLog = new System.Windows.Forms.TextBox();
             this.lblElasticSearchUrl = new System.Windows.Forms.Label();
@@ -134,7 +135,7 @@
             this.txtPatientIds.Name = "txtPatientIds";
             this.txtPatientIds.Size = new System.Drawing.Size(354, 127);
             this.txtPatientIds.TabIndex = 16;
-            this.txtPatientIds.Text = "1\r\n2\r\n3\r\n4\r\n5";
+            this.txtPatientIds.Text = resources.GetString("txtPatientIds.Text");
             // 
             // cbDemographics
             // 
@@ -149,6 +150,8 @@
             // cbReleaseOfInformation
             // 
             this.cbReleaseOfInformation.AutoSize = true;
+            this.cbReleaseOfInformation.Checked = true;
+            this.cbReleaseOfInformation.CheckState = System.Windows.Forms.CheckState.Checked;
             this.cbReleaseOfInformation.Location = new System.Drawing.Point(112, 91);
             this.cbReleaseOfInformation.Name = "cbReleaseOfInformation";
             this.cbReleaseOfInformation.Size = new System.Drawing.Size(100, 17);

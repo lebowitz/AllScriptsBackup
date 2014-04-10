@@ -10,16 +10,22 @@ namespace AllScriptRipper
 
         public ReleaseOfInformationWindow(AutomationElement ae) : base(ae) { }
 
+        private AutomationElement PreviewElement()
+        {
+            return Element.FindByIdPath("prmPanelPreview/btnPreview");
+        }
+
         internal void Save() 
         {
-            Element.FindByIdPath("prmPanelPreview/btnPreview").Invoke();
-            bool isSaveEnabled = false;
-            Thread.Sleep(1000);
+            Thread.Sleep(250);
 
+            PreviewElement().Invoke();
+            bool isSaveEnabled = false;
+            
             while (!isSaveEnabled)
             {
-                isSaveEnabled = GetSaveButton().Current.IsEnabled;
                 Thread.Sleep(250);
+                isSaveEnabled = GetSaveButton().Current.IsEnabled;                
             }
 
             Thread.Sleep(250);
@@ -32,14 +38,20 @@ namespace AllScriptRipper
 
             GetSaveButton().Invoke();
 
+            Thread.Sleep(250);
+
             var browseForFolderWindow = Element.GetWindows("Browse For Folder")[0];
             browseForFolderWindow.FindByNamePath("OK").Invoke();
+
+            Thread.Sleep(250);
 
             var fileSavedWindow = Element.FindByNamePath("File Saved");
             fileSavedWindow
                 .FindByIdPath("toolStripContainer")
                 .FindFirst(TreeScope.Children, Condition.TrueCondition)
                 .FindByIdPath("_panelFileSaved/_buttonOk").Invoke();
+
+            Thread.Sleep(250);
 
             // Name = 'File Download'
             // Type = 'ControlType.Window'
@@ -53,32 +65,10 @@ namespace AllScriptRipper
             // Id = 'FormFileSaved'
 
         }
-
-        AutomationElement saveButton = null;
-
+        
         private AutomationElement GetSaveButton() 
         {
-            if (saveButton == null)
-            {
-                saveButton = Element.FindByIdPath("prmPanelButtons/btnSaveClinicalData");
-            }
-            return saveButton;
-        }
-
-        
-        internal void WaitForDoneStatus()
-        {
-            /*
-            AutomationElement status = null;
-            string statusValue = null;
-            while (status == null || statusValue != "done")
-            {
-                status = Element.FindByIdPath("toolStripContainer/Bottom/statusStrip/StatusBar.Pane0");
-                if (status != null)
-                {
-                    statusValue = ((ValuePattern)status.GetCurrentPattern(ValuePattern.Pattern)).Current.Value;
-                }
-            }*/
-        }
+            return Element.FindByIdPath("prmPanelButtons/btnSaveClinicalData");            
+        }       
     }
 }
