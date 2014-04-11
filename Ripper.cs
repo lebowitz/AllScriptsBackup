@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Automation;
 using Nest;
 using Newtonsoft.Json.Linq;
-using System.Collections.Generic;
 
 namespace AllScriptRipper
 {
@@ -16,6 +16,8 @@ namespace AllScriptRipper
         {
             CancellationToken ct = tokenSource.Token;
             var scheduler = TaskScheduler.FromCurrentSynchronizationContext();
+
+            Task.Factory.StartNew(() => ExceptionHunterKiller(ct), ct);
           
             Task.Factory.StartNew(() =>
             {
@@ -37,7 +39,6 @@ namespace AllScriptRipper
 
                 foreach(string pid in options.PatientIds.Select(i => StripNonAscii(i).Trim()))
                 {
-
                     var patient = ec.Get<JObject>(options.Index, options.Type, pid);
 
                     if (ct.IsCancellationRequested)
@@ -48,7 +49,7 @@ namespace AllScriptRipper
 
                     try
                     {
-                        desktop.CloseOtherPrmWindows();
+                        desktop.CloseAllWindowsButFind();
 
                         findPatient.SetPatientId(pid);
 
@@ -97,6 +98,77 @@ namespace AllScriptRipper
 
             return ct;
         }
+
+        private static void ExceptionHunterKiller(CancellationToken ct)
+        {
+            while (!ct.IsCancellationRequested)
+            {
+                Thread.Sleep(TimeSpan.FromSeconds(10));
+
+                int pid = Process.GetProcessesByName("iMedica.Prm.Client").First().Id;
+                var rootWindows = AutomationElement.RootElement.FindAll(TreeScope.Children,
+                    new PropertyCondition(AutomationElement.ProcessIdProperty, pid));
+
+                foreach (AutomationElement w in rootWindows)
+                {
+                    if (CloseExceptionWindow(w))
+                    {
+                        var desktop = new PrmDesktopWindow();
+                        desktop.CloseAllWindowsButFind();                        
+                    }
+
+                    var formProcessing = w.FindFirst(TreeScope.Children,
+                        new PropertyCondition(AutomationElement.AutomationIdProperty, "FormProcessingStatus"));
+
+                    if (formProcessing != null)
+                    {
+                        var tw = TreeWalker.ControlViewWalker;
+                        var formProcessingParent = tw.GetParent(formProcessing);
+                        var formProcessingParentWindow =
+                            ((WindowPattern) formProcessingParent.GetCurrentPattern(WindowPattern.Pattern));
+
+                        var errorDialogs = formProcessing.FindAll(TreeScope.Children,
+                            new PropertyCondition(AutomationElement.LocalizedControlTypeProperty, "Dialog"));
+                        if (errorDialogs.Count > 0)
+                        {
+                            var errorDialog = errorDialogs[0];
+                            var okButton = errorDialog.FindFirst(TreeScope.Children,
+                                new PropertyCondition(AutomationElement.NameProperty, "OK"));
+                            if (okButton != null)
+                            {
+                                ((InvokePattern) okButton.GetCurrentPattern(InvokePattern.Pattern)).Invoke();
+                                Thread.Sleep(250);
+                            }
+                        }
+
+                        if (CloseExceptionWindow(formProcessing))
+                        {
+                            formProcessingParentWindow.Close();
+                        }
+                    }
+                }
+            }
+        }
+
+        private static bool CloseExceptionWindow(AutomationElement e)
+        {
+            var exceptionWindow = e.FindFirst(TreeScope.Children,
+                            new PropertyCondition(AutomationElement.AutomationIdProperty, "ExceptionUI"));
+            if (exceptionWindow != null)
+            {
+                var ignoreButton = exceptionWindow.FindFirst(TreeScope.Children,
+                    new PropertyCondition(AutomationElement.AutomationIdProperty, "buttonIgnore"));
+                if (ignoreButton != null)
+                {
+                    ((InvokePattern)ignoreButton.GetCurrentPattern(InvokePattern.Pattern)).Invoke();
+                    Thread.Sleep(250);
+                    return true;
+                }
+            }
+            return false;
+        }
+
+
         private static string StripNonAscii(string s)
         {
             return Regex.Replace(s, @"[^\u0000-\u007F]", string.Empty);

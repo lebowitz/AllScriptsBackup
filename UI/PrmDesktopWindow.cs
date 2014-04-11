@@ -10,7 +10,7 @@ namespace AllScriptRipper
             : base("mmw_")
         { }
 
-        internal void CloseOtherPrmWindows()
+        internal void CloseAllWindowsButFind()
         {
             int processId = Element.Current.ProcessId;
 
